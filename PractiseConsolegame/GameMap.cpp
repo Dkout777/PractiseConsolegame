@@ -6,7 +6,7 @@ GameMap::GameMap(int firstTilePosY, int firstTilePosX, int mapWidth, int mapHeig
 	this->mapWidth = mapWidth;
 	this->mapHeight = mapHeight;
 	this->tileSize = tileSize;
-
+	initTiles();
 
 }
 GameMap::GameMap() {

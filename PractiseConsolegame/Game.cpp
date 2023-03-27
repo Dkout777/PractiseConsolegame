@@ -54,7 +54,7 @@ Game::Game()
 	this->initGameMap();
 	this->initWindow();
 	this->initTiles();
-	this->initPlayer();
+	//this->initPlayer();
 }
 
 Game::~Game()
