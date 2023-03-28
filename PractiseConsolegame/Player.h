@@ -10,6 +10,7 @@ class Player
 	bool usedAction;
 public:
 
+	bool hasAction;
 	Player();
 	Player(int mov);
 	sf::CircleShape getPlayerIcon();
