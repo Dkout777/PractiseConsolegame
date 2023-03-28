@@ -19,31 +19,20 @@ void Game::initWindow()
 
 //Game map setup
 void Game::initGameMap() {
-	gameMap = GameMap(this->videoMode.width / 2, 10, 10, 10, 50);
+	gameMap = GameMap(10, videoMode.width/4, 20, 20, 50);
 }
-void Game::initTiles()
-{
-	for (int y = 0; y < mapHeight; y++) {
-		for (int x = 0; x < mapWidth; x++) {
-			this->tiles.push_back(Tile(tileSize));
-			this->tiles.back().setTilePosition(firstTilePosX + x * tileSize, firstTilePosY + y * tileSize);
-			this->tiles.back().setIndex(x + y * mapWidth);
-		}
-		
-	}
-	
 
-}
 void Game::initPlayer()
 {
 
 	player1 = Player(3);
-	tiles.at(20).assignEntity(0);
-	player1.setTile(20, tiles.at(20).getTilePosition());
+	player1.setTile(30, gameMap.getTileAt(30).getTilePosition());
+	gameMap.assignPlayerToTile(0, 30);
+	
 	players.push_back(player1);
-	player2 = Player();
-	player2.setTile(55, tiles.at(55).getTilePosition());
-	tiles.at(55).assignEntity(1);
+	player2 = Player(4);
+	player2.setTile(55, gameMap.getTileAt(55).getTilePosition());
+	gameMap.assignPlayerToTile(1, 55);
 	players.push_back(player2);
 
 }
@@ -51,10 +40,9 @@ void Game::initPlayer()
 Game::Game()
 {
 	this->initVariables();
-	this->initGameMap();
 	this->initWindow();
-	this->initTiles();
-	//this->initPlayer();
+	this->initGameMap();
+	this->initPlayer();
 }
 
 Game::~Game()
@@ -63,53 +51,7 @@ Game::~Game()
 }
 
 
-/*
-*Function Used to get tiles that must be Highlighted
-*
-*
-*
-*/
-std::set<int> Game::highlightMovementTiles(int  index, int mov) {
-	std::set<int> validTile;
-	validTile.insert(index);
-	for (int i = 0; i < mov; i++) {
-		std::set<int> tempSet;
-		for (int testingIndex : validTile) {
-			// add right tile	
-			if (testingIndex + 1 < mapHeight*mapWidth && (testingIndex + 1) % mapWidth != 0 && !tiles.at(testingIndex + 1).hasPlayer()) {
-				tempSet.insert(testingIndex + 1);
-			}
-			//add left tile
-			if (testingIndex - 1 >= 0 && testingIndex % mapWidth != 0 && !tiles.at(testingIndex - 1).hasPlayer()) {
-				tempSet.insert(testingIndex - 1);
-			}
-			//add Down tile
-			if (testingIndex < mapHeight * mapWidth - mapWidth && !tiles.at(testingIndex + mapWidth).hasPlayer()) {
-				tempSet.insert(testingIndex + mapWidth);
-			}
-			//add Up tile
-			if (testingIndex >= mapWidth && !tiles.at(testingIndex - mapWidth).hasPlayer()) {
-				tempSet.insert(testingIndex - mapWidth);
-			}
-
-		}
-		validTile.insert(tempSet.begin(), tempSet.end());
-	}
-	validTile.erase(index);
-	return validTile;
-}
-
-
-
 //Functions
-
-int Game::getTile(sf::Vector2i mousePos) {
-	int xPos = (mousePos.x - firstTilePosX) / tileSize;
-	int yPos = (mousePos.y - firstTilePosY) / tileSize;
-
-	return xPos + mapWidth * yPos;
-}
-
 void Game::pollEvents()
 {
 	while (this->window->pollEvent(this->event)) {
@@ -123,35 +65,31 @@ void Game::pollEvents()
 			
 			break;
 		case sf::Event::MouseButtonPressed:
+			std::cout << gameMap.getSelectedTilePosition() << "\n";
 			// If selected tile has player and it's not currently in a move phase
-			if (tiles.at(selectedTilePosition).hasPlayer() && !playerMovPhase) {
+			if (gameMap.getTileAt(gameMap.getSelectedTilePosition()).hasPlayer() && !playerMovPhase) {
 				playerMovPhase = true;
-				selectedPlayer = tiles.at(selectedTilePosition).getEntity();
-				selectedTiles = highlightMovementTiles(selectedTilePosition,players.at(tiles.at(selectedTilePosition).getEntity()).getMov());
-				for (int index : selectedTiles) {
-					tiles.at(index).turnBlue();
-				}
+				selectedPlayer = gameMap.getTileAt(gameMap.getSelectedTilePosition()).getEntity();
+				gameMap.handlePlayerMovHighlightOn(players.at(selectedPlayer).getMov());
+				
 			}
 			//If tile doesn't have player, is currently in move phase and the selected tile is not option
-			else if (!tiles.at(selectedTilePosition).hasPlayer() && playerMovPhase && !selectedTiles.count(selectedTilePosition))  {
+			else if (!gameMap.getTileAt(gameMap.getSelectedTilePosition()).hasPlayer() && playerMovPhase && !gameMap.getSelectedTiles().count(gameMap.getSelectedTilePosition())){
 				playerMovPhase = false;
-				for (int index : selectedTiles) {
-					tiles.at(index).turnGreen();
-				}
-				selectedTiles.clear();
+				gameMap.handlePlayerMovHighlightOff();
 				selectedPlayer = -1;
 				
 			}
 			//If tile doesn't have player, is move phase and is a valid tile
-			else if (!tiles.at(selectedTilePosition).hasPlayer() && playerMovPhase && selectedTiles.count(selectedTilePosition)) {
+			else if (!gameMap.getTileAt(gameMap.getSelectedTilePosition()).hasPlayer() && playerMovPhase && gameMap.getSelectedTiles().count(gameMap.getSelectedTilePosition())) {
 				playerMovPhase = false;
-				for (int index : selectedTiles) {
-					tiles.at(index).turnGreen();
-				}
-				tiles.at(players.at(selectedPlayer).getTileIndex()).clearEntity();
-				tiles.at(selectedTilePosition).assignEntity(selectedPlayer);
-				players.at(selectedPlayer).setTile(selectedTilePosition, tiles.at(selectedTilePosition).getTilePosition());
-				selectedTiles.clear();
+				gameMap.handlePlayerMovHighlightOff();
+					//tiles.at(players.at(selectedPlayer).getTileIndex()).clearEntity();
+					//tiles.at(selectedTilePosition).assignEntity(selectedPlayer);
+				gameMap.clearTile(players.at(selectedPlayer).getTileIndex());
+				gameMap.assignPlayerToTile(selectedPlayer, gameMap.getSelectedTilePosition());
+				players.at(selectedPlayer).setTile(gameMap.getSelectedTilePosition(), gameMap.getTileAt(gameMap.getSelectedTilePosition()).getTilePosition());
+				
 
 
 			}
@@ -183,20 +121,11 @@ void Game::update()
 }
 void Game::updateTiles()
 {
-
-	int x = getTile(mousePosWindow);
-	this->tiles.at(selectedTilePosition).turnOffOutline();
-	if (x < mapWidth*mapHeight && x >= 0 && mousePosWindow.x < firstTilePosX + tileSize*mapWidth && mousePosWindow.x > firstTilePosX && mousePosWindow.y >= firstTilePosY)  {
-		this->selectedTilePosition = x;
-		this->tiles.at(selectedTilePosition).turnOnOutline();
-	}
-	std::cout <<"mouse on" << x << "\n";
-	
-
+	gameMap.handleOutline(mousePosWindow);
 }
-void Game::renderTiles()
+void Game::renderMap()
 {
-	for (Tile tile : tiles) {
+	for (Tile tile : gameMap.getTiles()) {
 		this->window->draw(tile.getTileDisplay());
 	}
 
@@ -219,7 +148,7 @@ void Game::render()
 	*/
 	this->window->clear();
 	//Draw Game
-	this->renderTiles();
+	this->renderMap();
 	this->renderPlayers();
 	this->window->display();
 }
