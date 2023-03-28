@@ -6,7 +6,7 @@ GameMap::GameMap(int firstTilePosY, int firstTilePosX, int mapWidth, int mapHeig
 	this->mapWidth = mapWidth;
 	this->mapHeight = mapHeight;
 	this->tileSize = tileSize;
-
+	initTiles();
 
 }
 GameMap::GameMap() {
@@ -61,10 +61,52 @@ std::set<int> GameMap::highlightMovementTiles(int  index, int mov) {
 	validTile.erase(index);
 	return validTile;
 }
-int GameMap::getTile(sf::Vector2i mousePos){
+int GameMap::getTileIndex(sf::Vector2i mousePos){
 	int xPos = (mousePos.x - firstTilePosX) / tileSize;
 	int yPos = (mousePos.y - firstTilePosY) / tileSize;
 
 	return xPos + mapWidth * yPos;
 }
+void GameMap::handleOutline(sf::Vector2i mousePos) {
+	int x = getTileIndex(mousePos);
+	this->tiles.at(selectedTilePosition).turnOffOutline();
+	if (x < mapWidth * mapHeight && x >= 0 && mousePos.x < firstTilePosX + tileSize * mapWidth && mousePos.x > firstTilePosX && mousePos.y >= firstTilePosY) {
+		this->selectedTilePosition = x;
+		this->tiles.at(selectedTilePosition).turnOnOutline();
+	}
+	//std::cout << "mouse on" << x << "\n";
+
+}
+void GameMap::handlePlayerMovHighlightOn(int playerMov) {
+	selectedTiles = highlightMovementTiles(selectedTilePosition, playerMov);
+	for (int index : selectedTiles) {
+		tiles.at(index).turnBlue();
+	}
+
+}
+void GameMap::handlePlayerMovHighlightOff() {
+	for (int index : selectedTiles) {
+		tiles.at(index).turnGreen();
+	}
+	selectedTiles.clear();
+}
+std::vector<Tile> GameMap::getTiles() {
+	return tiles;
+}
+void GameMap::assignPlayerToTile(int playerIndex, int tileIndex){
+	tiles.at(tileIndex).assignEntity(playerIndex);
+}
+void GameMap::clearTile(int index) {
+	tiles.at(index).clearEntity();
+
+}
+int GameMap::getSelectedTilePosition() {
+	return selectedTilePosition;
+}
+std::set<int> GameMap::getSelectedTiles() {
+	return selectedTiles;
+}
+
+
+
 

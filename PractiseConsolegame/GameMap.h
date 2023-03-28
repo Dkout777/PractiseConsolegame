@@ -22,8 +22,16 @@ public:
 	void initTiles();
 	std::set<int> highlightMovementTiles(int  index, int mov);
 	Tile getTileAt(int index);
-	int getTile(sf::Vector2i mousePos);
-	
+	int getTileIndex(sf::Vector2i mousePos);
+	void handleOutline(sf::Vector2i mousePos);
+	void handlePlayerMovHighlightOn(int playerMov);
+	void handlePlayerMovHighlightOff();
+	std::vector<Tile> getTiles();
+	void assignPlayerToTile(int playerIndex, int tileIndex);
+	void clearTile(int index);
+	int getSelectedTilePosition();
+	std::set<int> getSelectedTiles();
+
 
 
 };
