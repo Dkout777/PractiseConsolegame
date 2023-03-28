@@ -19,7 +19,7 @@ void Game::initWindow()
 
 //Game map setup
 void Game::initGameMap() {
-	gameMap = GameMap(10, videoMode.width/4, 20, 20, 50);
+	gameMap = GameMap(10, videoMode.width/4, 20, 20, 32);
 }
 
 void Game::initPlayer()
