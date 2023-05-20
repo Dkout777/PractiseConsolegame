@@ -1,12 +1,11 @@
 #include "Player.h"
 Player::Player() {
-	//player.setPosition(10.f, 10.f);
-	playerIcon.setRadius(16.f);
+	playerIcon.setRadius(25.f);
 	mov = 4;
 }
 Player::Player(int mov) {
 	this->mov = mov;
-	playerIcon.setRadius(16.f);
+	playerIcon.setRadius(25.f);
 }
 
 sf::CircleShape Player::getPlayerIcon()
@@ -27,3 +26,13 @@ int Player::getTileIndex() {
 int Player::getMov() {
 	return this->mov;
 }
+void Player::useAction() {
+	hasAction = false;
+}
+void Player::resetAction() {
+	hasAction = true;
+}
+
+bool Player::getHasAction() {
+	return hasAction;
+};

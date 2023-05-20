@@ -7,6 +7,10 @@
 #include "Player.h"
 #include "Tile.h"
 #include "GameMap.h"
+#include "Button.h"
+#include "TurnCounter.h"
+
+
 class Game
 {
 private:
@@ -15,8 +19,10 @@ private:
 	sf::RenderWindow* window;
 	sf::VideoMode videoMode;
 	sf::Event event;
+	sf::Font font;
 
-
+	//UI
+	
 	
 
 	//Mouse positions
@@ -30,12 +36,16 @@ private:
 	Player player2;
 	bool playerMovPhase = false;
 	int selectedPlayer = -1;
+	Button endTurnBut;
+	TurnCounter turnCounter;
+	int turnCount = 0;
 
 	//private functions
 	void initVariables();
 	void initWindow();
 	void initGameMap();
 	void initPlayer();
+	void initUi();
 
 public:
 	//Constructors / Destructors
@@ -50,7 +60,9 @@ public:
 	void update();
 	void renderMap();
 	void renderPlayers();
+	void renderUI();
 	void render();
+	void nextTurn();
 
 };
 
