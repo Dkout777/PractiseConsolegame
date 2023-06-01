@@ -6,7 +6,7 @@
 void Game::initVariables()
 {
 	this->window = nullptr;
-	if (!font.loadFromFile("./Fonts/Kinematical.ttf"))
+	if (!font.loadFromFile("./Fonts/OpenSans-Regular.ttf"))
 	{
 	}
 }
@@ -41,7 +41,11 @@ void Game::initPlayer()
 }
 
 void Game::initUi() {
-	endTurnBut = Button(10.f,10.f,100.f, 50.f, sf::Color::Red, font);
+	if (!endTurnTexture.loadFromFile("./images/EndTurnBtn.png")) {
+
+	}
+	endTurnTexture.setSmooth(true);
+	endTurnBut = Button(10.f,10.f,0.5f, 0.5f, sf::Color::Red, font, endTurnTexture);
 	turnCounter = TurnCounter(500, 500, font);
 
 }
@@ -129,7 +133,9 @@ void Game::updateTiles()
 {
 	gameMap.handleOutline(mousePosWindow);
 }
-
+void Game::updateButtons() {
+	endTurnBut.handleHover(sf::Vector2f(mousePosWindow.x, mousePosWindow.y));
+}
 void Game::update()
 {
 
@@ -138,6 +144,7 @@ void Game::update()
 	this->updateMousePositions();
 
 	this->updateTiles();
+	this->updateButtons();
 	
 
 }
@@ -183,7 +190,7 @@ const bool Game::running() const
 }
 
 void Game::nextTurn() {
-	turnCount++;
+	turnCounter.incrementCount();
 	for (int x = 0; x < players.size(); x++) {
 		players.at(x).resetAction();
 	}

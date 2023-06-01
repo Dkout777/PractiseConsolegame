@@ -22,6 +22,7 @@ private:
 	sf::Font font;
 
 	//UI
+	sf::Texture endTurnTexture;
 	
 	
 
@@ -57,6 +58,7 @@ public:
 	void pollEvents();
 	void updateMousePositions();
 	void updateTiles();
+	void updateButtons();
 	void update();
 	void renderMap();
 	void renderPlayers();
