@@ -7,9 +7,9 @@ class Player
 	int mov;
 	sf::CircleShape playerIcon;
 	int occupiedTileIndex;
-	bool usedAction;
 public:
 
+	bool hasAction = true;
 	Player();
 	Player(int mov);
 	sf::CircleShape getPlayerIcon();
@@ -17,5 +17,8 @@ public:
 	void setTile(int index, sf::Vector2f pos);
 	int getTileIndex();
 	int getMov();
+	void useAction();
+	void resetAction();
+	bool getHasAction();
 };
 

@@ -10,7 +10,6 @@ class Tile
 	sf::RectangleShape tileDisplay;	
 	int occupiedPlayer = -1;
 	bool passable = true;
-	bool border;
 	int index;
 	
 public:
